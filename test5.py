@@ -16,15 +16,19 @@ class RequestTestCase(unittest.TestCase):
         time = datetime.now().strftime("%d-%m-%y-%H%M%S")
 
         # Realizar requests
-        #for i in range (1, 18):
         i = 1804
         response = self.browser.get('https://apicompuplaza.compuplaza.net.pe/api/tienda_v1/Store/getProductoById/' + str(i))
-        ## ¡Realizar pruebas en todas las solicitudes que contengan datos sensibles! ##
+        
+        ## METODO 1: X-Frame-Option ##
 
         # Leer requests
         for request in self.browser.requests:
             if request.response:
                 printResponse(request, time)
+        
+        ## METODO 2: Programación Defensiva ##
+        self.browser.get('https://apicompuplaza.compuplaza.net.pe/api/click.html')
+        self.browser.save_screenshot('C:/Users/User/Documents/GitHub/TestSelenium/Screenshots/Clickjacking-' + time + '.png')
                 
 
 
@@ -39,17 +43,12 @@ def printResponse(request, time):
         # Request
         toPrint = 'Request: ' + request.url + '\n'
         # Headers
-        toPrint += 'Headers:\n' + json.dumps(request.response.headers.as_string()) + '\n'
-        # Pretty
-        toPrint += 'Headers Pretty:\n' + request.response.headers.as_string() + '\n'
-
+        toPrint += 'Headers:\n' + json.dumps(request.response.headers.as_string()) + '\n\n'
         # Find Headers
-        toPrint += 'Searching for Cache Control headers: \n\n'
+        toPrint += 'Searching for X-Frame-Option header: \n'
 
-        # Cache-control
-        toPrint += checkHeader(request.response.headers, 'Cache-control', 'no-store') + '\n'
-        # Pragma
-        toPrint += checkHeader(request.response.headers, 'Pragma', 'no-cache') + '\n'
+        # X-Frame-Option
+        toPrint += checkHeader(request.response.headers, 'X-Frame-Option') + '\n'
 
 
         # Print a consola
@@ -59,7 +58,7 @@ def printResponse(request, time):
         )
 
         # Print en archivo .txt
-        with open('Cache-Control-' + time + '.txt', 'a') as f:
+        with open('Clickjacking-' + time + '.txt', 'a') as f:
             f.write(toPrint + '\n===============================================================\n')
 
 def checkHeader(headers, toCheck, value=None):

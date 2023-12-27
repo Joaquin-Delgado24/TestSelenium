@@ -16,10 +16,8 @@ class RequestTestCase(unittest.TestCase):
         time = datetime.now().strftime("%d-%m-%y-%H%M%S")
 
         # Realizar requests
-        #for i in range (1, 18):
         i = 1804
         response = self.browser.get('https://apicompuplaza.compuplaza.net.pe/api/tienda_v1/Store/getProductoById/' + str(i))
-        ## ¡Realizar pruebas en todas las solicitudes que contengan datos sensibles! ##
 
         # Leer requests
         for request in self.browser.requests:
@@ -41,15 +39,16 @@ def printResponse(request, time):
         # Headers
         toPrint += 'Headers:\n' + json.dumps(request.response.headers.as_string()) + '\n'
         # Pretty
-        toPrint += 'Headers Pretty:\n' + request.response.headers.as_string() + '\n'
-
+        toPrint += 'Headers Pretty:\n' + request.response.headers.as_string() + '\n\n'
         # Find Headers
-        toPrint += 'Searching for Cache Control headers: \n\n'
+        toPrint += 'Searching for information headers: \n'
 
-        # Cache-control
-        toPrint += checkHeader(request.response.headers, 'Cache-control', 'no-store') + '\n'
-        # Pragma
-        toPrint += checkHeader(request.response.headers, 'Pragma', 'no-cache') + '\n'
+        # X-Frame-Option
+        toPrint += checkHeader(request.response.headers, 'X-Powered-By') + '\n'
+        # X-Frame-Option
+        toPrint += checkHeader(request.response.headers, 'X-Aspnet-Version') + '\n'
+        # X-Frame-Option
+        toPrint += checkHeader(request.response.headers, 'Server') + '\n'
 
 
         # Print a consola
@@ -59,21 +58,15 @@ def printResponse(request, time):
         )
 
         # Print en archivo .txt
-        with open('Cache-Control-' + time + '.txt', 'a') as f:
+        with open('Server-Version-Disclosure-' + time + '.txt', 'a') as f:
             f.write(toPrint + '\n===============================================================\n')
 
-def checkHeader(headers, toCheck, value=None):
+def checkHeader(headers, toCheck):
     if(headers.get(toCheck)):
-        if(value):
-            value = str(value)
-            if(value in headers.get(toCheck)):
-                return 'Header and Correct value Found: [' + toCheck + ']: ' + value
-            else:
-                return '[!] Header [' + toCheck + '] Found, but value [' + value + '] was not: ' + headers.get(toCheck)
-        else:
-            return 'Header Found: ' + toCheck
+        value = headers.get(toCheck)
+        return '[!] Header found: [' + toCheck + ']: ' + value
     else:
-        return '[!] Header not Found: ' + toCheck
+        return 'Header not Found: ' + toCheck
         
 
 if __name__ == '__main__':

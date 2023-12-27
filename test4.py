@@ -16,7 +16,6 @@ class RequestTestCase(unittest.TestCase):
         time = datetime.now().strftime("%d-%m-%y-%H%M%S")
 
         # Realizar requests
-        #for i in range (1, 18):
         site = 'https://compuplaza.net.pe/'
         response = self.browser.get(site)
 
